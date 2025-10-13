@@ -372,11 +372,7 @@ public:
   QList<double> getTranslation() const;
   QList<double> getRotation() const;
   std::unordered_map<FileFormat, QAction *> exportMap;
-  void onLanguageActiveChanged(int language)
-  {
-    currentLanguage = language;
-    printf("lang is %d\n", currentLanguage);
-  }
+  void onLanguageActiveChanged(int language) { currentLanguage = language; }
   int currentLanguage;
 
 public slots:
