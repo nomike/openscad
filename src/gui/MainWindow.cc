@@ -911,7 +911,8 @@ void MainWindow::instantiateRoot()
 
     std::shared_ptr<const FileContext> file_context;
 #ifdef ENABLE_PYTHON
-    if (python_result_node != NULL && this->python_active) this->absoluteRootNode = python_result_node;
+    if (genlang_result_node != NULL && currentLanguage != LANG_SCAD)
+      this->absoluteRootNode = genlang_result_node;
     else
 #endif
       this->absoluteRootNode = this->rootFile->instantiate(*builtin_context, &file_context);
@@ -1090,6 +1091,7 @@ void MainWindow::actionOpenRecent()
 {
   auto action = qobject_cast<QAction *>(sender());
   tabManager->open(action->data().toString());
+  // recomputeLanguageActive(); // should be done in open
 }
 
 void MainWindow::on_fileActionClearRecent_triggered()
@@ -1194,7 +1196,7 @@ void MainWindow::saveBackup()
 
   if (!this->tempFile) {
 #ifdef ENABLE_PYTHON
-    const QString suffix = this->python_active ? "py" : "scad";
+    const QString suffix = currentLanguage == LANG_PYTHON ? "py" : "scad";
 #else
     const QString suffix = "scad";
 #endif
@@ -1631,17 +1633,11 @@ std::shared_ptr<SourceFile> MainWindow::parseDocument(EditorInterface *editor)
   auto document = editor->toPlainText();
   auto fulltext = std::string(document.toUtf8().constData()) + "\n\x03\n" + commandline_commands;
 
-  const std::string fname = editor->filepath.isEmpty() ? "" : editor->filepath.toStdString();
+  auto fulltext_py = std::string(this->lastCompiledDoc.toUtf8().constData());
+  const char *fname = editor->filepath.isEmpty() ? "" : fnameba.constData();
+  SourceFile *sourceFile;
 #ifdef ENABLE_PYTHON
-  this->python_active = false;
-  if (boost::algorithm::ends_with(fname, ".py")) {
-    std::string content = std::string(this->lastCompiledDoc.toUtf8().constData());
-    if (Feature::ExperimentalPythonEngine.is_enabled() && trust_python_file(fname, content))
-      this->python_active = true;
-    else LOG(message_group::Warning, Location::NONE, "", "Python is not enabled");
-  }
-
-  if (this->python_active) {
+  if (currentLanguage == LANG_PYTHON) {
     auto fulltext_py = std::string(this->lastCompiledDoc.toUtf8().constData());
 
     const auto& venv = venvBinDirFromSettings();

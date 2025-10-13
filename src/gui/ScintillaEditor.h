@@ -154,6 +154,14 @@ private slots:
   void fireModificationChanged();
   void onIndicatorClicked(int line, int col, Qt::KeyboardModifiers state);
   void onIndicatorReleased(int line, int col, Qt::KeyboardModifiers state);
+#ifdef ENABLE_PYTHON
+  void onLanguageActiveChanged(int lang);
+#endif
+signals:
+  void escapePressed(void);
+
+public:
+  void public_applySettings();
 
 private:
   QVBoxLayout *scintillaLayout;
