@@ -25,6 +25,7 @@
  */
 
 #include <Python.h>
+#include "genlang/genlang.h"
 #include "python/pyopenscad.h"
 #include "core/primitives.h"
 #include "core/CsgOpNode.h"
@@ -914,6 +915,7 @@ PyObject *python_show_core(PyObject *obj)
     return NULL;
   }
   python_result_node = child;
+  shows.push_back(child);
   return Py_None;
 }
 

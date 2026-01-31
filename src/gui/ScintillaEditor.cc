@@ -572,6 +572,13 @@ void ScintillaEditor::setColormap(const EditorColorScheme *colorScheme)
     newLexer->setColor(readColor(colors, "keyword-custom9", textColor), ScadLexer2::Custom9);
     newLexer->setColor(readColor(colors, "keyword-custom10", textColor), ScadLexer2::Custom10);
 
+#ifdef ENABLE_PYTHON
+    this->pythonLexer->setFont(font);
+    this->pythonLexer->setColor(textColor);
+    this->pythonLexer->setDefaultPaper(paperColor);
+    this->pythonLexer->setPaper(paperColor);
+#endif
+
 #else
     auto *newLexer = new ScadLexer(this);
 
@@ -618,6 +625,31 @@ void ScintillaEditor::setColormap(const EditorColorScheme *colorScheme)
                        QsciLexerCPP::CommentDocKeyword);
 
 #endif  // ENABLE_LEXERTL
+
+#ifdef ENABLE_PYTHON
+    // colors is guaranteed to have been defined earlier
+    this->pythonLexer->setColor(readColor(colors, "comment", textColor), QsciLexerPython::Comment);
+    this->pythonLexer->setColor(readColor(colors, "number", textColor), QsciLexerPython::Number);
+    this->pythonLexer->setColor(readColor(colors, "string", textColor),
+                                QsciLexerPython::DoubleQuotedString);
+    this->pythonLexer->setColor(readColor(colors, "string", textColor),
+                                QsciLexerPython::SingleQuotedString);
+    this->pythonLexer->setColor(readColor(colors, "keywords", textColor), QsciLexerPython::Keyword);
+    this->pythonLexer->setColor(readColor(colors, "string", textColor),
+                                QsciLexerPython::TripleSingleQuotedString);
+    this->pythonLexer->setColor(readColor(colors, "string", textColor),
+                                QsciLexerPython::TripleDoubleQuotedString);
+    this->pythonLexer->setColor(readColor(colors, "models", textColor), QsciLexerPython::ClassName);
+    this->pythonLexer->setColor(readColor(colors, "functions", textColor),
+                                QsciLexerPython::FunctionMethodName);
+    this->pythonLexer->setColor(readColor(colors, "operator", textColor), QsciLexerPython::Operator);
+    this->pythonLexer->setColor(readColor(colors, "variables", textColor), QsciLexerPython::Identifier);
+    this->pythonLexer->setColor(readColor(colors, "comment", textColor), QsciLexerPython::CommentBlock);
+    this->pythonLexer->setColor(Qt::red, QsciLexerPython::UnclosedString);
+    this->pythonLexer->setColor(readColor(colors, "special-variables", textColor),
+                                QsciLexerPython::HighlightedIdentifier);
+    this->pythonLexer->setColor(readColor(colors, "functions", textColor), QsciLexerPython::Decorator);
+#endif  // ifdef ENABLE_PYTHON
 
     // Somehow, the margin font got lost when we deleted the old lexer
     qsci->setMarginsFont(font);
@@ -867,6 +899,9 @@ void ScintillaEditor::initFont(const QString& fontName, uint size)
   this->currentFont = QFont(fontName, size);
   this->currentFont.setFixedPitch(true);
   this->lexer->setFont(this->currentFont);
+#ifdef ENABLE_PYTHON
+  this->pythonLexer->setFont(this->currentFont);
+#endif
   qsci->setMarginsFont(this->currentFont);
   onTextChanged();  // Update margin width
 }

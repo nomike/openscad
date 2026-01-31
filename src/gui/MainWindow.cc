@@ -1662,6 +1662,7 @@ std::shared_ptr<SourceFile> MainWindow::parseDocument(EditorInterface *editor)
     }
     auto error = evaluatePython(fulltext_py, false);
     if (error.size() > 0) LOG(message_group::Error, Location::NONE, "", error.c_str());
+    finishPython();
     fulltext = "\n";
   }
 #endif  // ifdef ENABLE_PYTHON
@@ -1687,6 +1688,7 @@ void MainWindow::parseTopLevelDocument()
 {
   resetSuppressedMessages();
 
+  currentLanguage = activeEditor->language;
   this->lastCompiledDoc = activeEditor->toPlainText();
 
   activeEditor->resetHighlighting();
@@ -3115,6 +3117,8 @@ void MainWindow::onTabManagerEditorChanged(EditorInterface *newEditor)
   activeEditor = newEditor;
 
   if (newEditor == nullptr) return;
+
+  onLanguageActiveChanged(newEditor->language);
 
   parameterDock->setWidget(newEditor->parameterWidget);
   editActionUndo->setEnabled(newEditor->canUndo());

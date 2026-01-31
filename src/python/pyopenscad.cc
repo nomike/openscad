@@ -26,6 +26,7 @@
 #include <Python.h>
 #include <filesystem>
 
+#include "genlang/genlang.h"
 #include "pyopenscad.h"
 #include "core/CsgOpNode.h"
 #include "core/CurveDiscretizer.h"
@@ -453,6 +454,7 @@ void initPython(const std::string& binDir, double time)
 
 void finishPython(void)
 {
+  show_final();
 }
 
 std::string evaluatePython(const std::string& code, bool dry_run)
