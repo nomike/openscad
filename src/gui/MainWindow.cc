@@ -916,7 +916,10 @@ void MainWindow::instantiateRoot()
 
     std::shared_ptr<const FileContext> file_context;
 #ifdef ENABLE_PYTHON
-    if (genlang_result_node != NULL && currentLanguage != LANG_SCAD)
+    // OpenSCAD: only the last show() counts (python_result_node). show_final() is for another feature.
+    if (currentLanguage == LANG_PYTHON && python_result_node != NULL)
+      this->absoluteRootNode = python_result_node;
+    else if (genlang_result_node != NULL && currentLanguage != LANG_SCAD)
       this->absoluteRootNode = genlang_result_node;
     else
 #endif

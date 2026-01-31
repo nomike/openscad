@@ -454,7 +454,6 @@ void initPython(const std::string& binDir, double time)
 
 void finishPython(void)
 {
-  show_final();
 }
 
 std::string evaluatePython(const std::string& code, bool dry_run)
