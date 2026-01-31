@@ -17,6 +17,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <Qsci/qsciscintilla.h>
+#include <Qsci/qscilexerpython.h>
 
 #include "gui/Editor.h"
 #include "gui/ScadApi.h"
@@ -183,6 +184,9 @@ private:
   ScadLexer2 *lexer;
 #else
   ScadLexer *lexer;
+#endif
+#ifdef ENABLE_PYTHON
+  QsciLexerPython *pythonLexer = new QsciLexerPython();
 #endif
   QFont currentFont;
   ScadApi *api;

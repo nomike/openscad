@@ -138,6 +138,7 @@
 #include "io/dxfdim.h"
 #include "io/export.h"
 #include "io/fileutils.h"
+#include "genlang/genlang.h"
 #include "openscad.h"
 #include "platform/PlatformUtils.h"
 #include "utils/exceptions.h"
@@ -1643,6 +1644,7 @@ std::shared_ptr<SourceFile> MainWindow::parseDocument(EditorInterface *editor)
   auto fulltext = std::string(document.toUtf8().constData()) + "\n\x03\n" + commandline_commands;
 
   auto fulltext_py = std::string(this->lastCompiledDoc.toUtf8().constData());
+  auto fnameba = editor->filepath.toUtf8();
   const char *fname = editor->filepath.isEmpty() ? "" : fnameba.constData();
   SourceFile *sourceFile;
 #ifdef ENABLE_PYTHON
@@ -1664,7 +1666,6 @@ std::shared_ptr<SourceFile> MainWindow::parseDocument(EditorInterface *editor)
   }
 #endif  // ifdef ENABLE_PYTHON
 
-  SourceFile *sourceFile;
   sourceFile = parse(sourceFile, fulltext, fname, fname, false) ? sourceFile : nullptr;
 
   editor->resetHighlighting();

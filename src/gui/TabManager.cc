@@ -1,5 +1,6 @@
 #include "gui/TabManager.h"
 
+#include "genlang/genlang.h"
 #include <QApplication>
 #include <QStringBuilder>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -175,8 +176,6 @@ void TabManager::createTab(const QString& filename)
   auto scintillaEditor = new ScintillaEditor(tabWidget);
   editor = scintillaEditor;
   //  Preferences::create(editor->colorSchemes());   // needs to be done only once, however handled
-  this->use_gvim = GlobalPreferences::inst()->getValue("editor/usegvim").toBool();
-  //  this->use_gvim = true;
   par->activeEditor = editor;
   editor->parameterWidget = new ParameterWidget(par->parameterDock);
   connect(editor->parameterWidget, &ParameterWidget::parametersChanged, par,

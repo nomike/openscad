@@ -1,6 +1,8 @@
 #include "gui/ScintillaEditor.h"
 
+#include "genlang/genlang.h"
 #include <QColor>
+#include <Qsci/qscilexercpp.h>
 #include <QCursor>
 #include <QEvent>
 #include <QGuiApplication>
@@ -589,9 +591,10 @@ void ScintillaEditor::setColormap(const EditorColorScheme *colorScheme)
       true);  // does not work on first word, but allows remaining words to be syntax colored
 
     setLexer(newLexer);
-#endif
+
     // All other properties must be set after attaching to QSCintilla so
     // the editor gets the change events and updates itself to match
+    newLexer->setFont(font);
     newLexer->setColor(textColor);
     newLexer->setPaper(paperColor);
 #ifdef ENABLE_PYTHON
