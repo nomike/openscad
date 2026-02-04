@@ -17,6 +17,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <Qsci/qsciscintilla.h>
+#include <Qsci/qscilexerpython.h>
 
 #include "gui/Editor.h"
 #include "gui/ScadApi.h"
@@ -154,6 +155,12 @@ private slots:
   void fireModificationChanged();
   void onIndicatorClicked(int line, int col, Qt::KeyboardModifiers state);
   void onIndicatorReleased(int line, int col, Qt::KeyboardModifiers state);
+  void onLanguageChanged(int lang) override;
+signals:
+  void escapePressed(void);
+
+public:
+  void public_applySettings();
 
 private:
   QVBoxLayout *scintillaLayout;
@@ -178,6 +185,7 @@ private:
 #else
   ScadLexer *lexer;
 #endif
+  QsciLexerPython *pythonLexer = new QsciLexerPython();
   QFont currentFont;
   ScadApi *api;
   QStringList userList;
