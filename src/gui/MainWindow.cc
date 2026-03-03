@@ -107,7 +107,9 @@
 #include "geometry/GeometryEvaluator.h"
 #include "glview/PolySetRenderer.h"
 #include "glview/RenderSettings.h"
+#if not defined(USE_POLYSET_FOR_CGAL)
 #include "glview/cgal/CGALRenderer.h"
+#endif
 #include "glview/preview/CSGTreeNormalizer.h"
 #include "glview/preview/ThrownTogetherRenderer.h"
 #include "gui/AboutDialog.h"
@@ -437,17 +439,6 @@ void MainWindow::addKeyboardShortCut(const QList<QAction *>& actions)
       "%1 &nbsp;<span style=\"color: gray; font-size: small; font-style: italic\">%2</span>");
     action->setToolTip(toolTip.arg(action->toolTip(), shortCut));
   }
-}
-
-/**
- * Update window settings that get overwritten by the restoreState()
- * Qt call. So the values are loaded before the call and restored here
- * regardless of the (potential outdated) serialized state.
- */
-void MainWindow::updateWindowSettings(bool isEditorToolbarVisible, bool isViewToolbarVisible)
-{
-  viewActionHideEditorToolBar->setChecked(!isEditorToolbarVisible);
-  viewActionHide3DViewToolBar->setChecked(!isViewToolbarVisible);
 }
 
 void MainWindow::onAxisChanged(InputEventAxisChanged *)
@@ -1952,6 +1943,9 @@ void MainWindow::actionRenderDone(const std::shared_ptr<const Geometry>& root_ge
     LOG("Rendering finished.");
 
     this->rootGeom = root_geom;
+#if defined(USE_POLYSET_FOR_CGAL)
+    this->geomRenderer = std::make_shared<PolySetRenderer>(this->rootGeom);
+#else
     // Choose PolySetRenderer for PolySet and Polygon2d, and for Manifold since we
     // know that all geometries are convertible to PolySet.
     if (RenderSettings::inst()->backend3D == RenderBackend3D::ManifoldBackend ||
@@ -1961,6 +1955,7 @@ void MainWindow::actionRenderDone(const std::shared_ptr<const Geometry>& root_ge
     } else {
       this->geomRenderer = std::make_shared<CGALRenderer>(this->rootGeom);
     }
+#endif
 
     // Go to CGAL view mode
     viewModeRender();
@@ -3902,7 +3897,10 @@ void MainWindow::restoreWindowState()
     tabifyDockWidget(errorLogDock, fontListDock);
     tabifyDockWidget(fontListDock, colorListDock);
     tabifyDockWidget(colorListDock, animateDock);
+    parameterDock->hide();
+    viewportControlDock->hide();
     consoleDock->show();
+    consoleDock->raise();
   } else {
 #ifdef Q_OS_WIN
     // Try moving the main window into the display range, this
@@ -3923,7 +3921,6 @@ void MainWindow::restoreWindowState()
 #endif  // ifdef Q_OS_WIN
   }
 
-  updateWindowSettings(isEditorToolbarVisible, is3DViewToolbarVisible);
 }
 
 void MainWindow::openRemainingFiles(const QStringList& filenames)
